@@ -3,12 +3,15 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const path = require('path');
 
+require('dotenv').config()
+
+
 const auth = require('./routes/auth')
 const crud = require('./routes/crud')
 
 const app = express();
 
-mongoose.connect('mongodb+srv://Alexis:Alexis_31@cluster0.laqodw2.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(process.env.MONGODB_ADDRESS,
 {
 	useNewUrlParser: true,
 	useUnifiedTopology: true

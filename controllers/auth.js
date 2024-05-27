@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const User = require('../schema/User');
 
@@ -7,14 +8,14 @@ const User = require('../schema/User');
 exports.logged = (req, res, next) => {
 	try {
 		const token = req.body.token.split('').filter(char => char !== '"').join('');
-		const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+		const decodedToken = jwt.verify(token, process.env.TOKEN);
 		const username = decodedToken.username;
 		User.findOne({ username: username })
 		.then(user => {
 			if (user) {
-			res.status(200).json({ message: 'loggé' });
+				res.status(200).json({ message: 'loggé' });
 			} else {
-			res.status(200).json({ message: null });
+				res.status(200).json({ message: null });
 			}
 		})
 		.catch(error => {
@@ -45,7 +46,7 @@ exports.login = (req, res, next) => {
 						username: user.username,
 						token: jwt.sign(
 							{ username: user.username },
-							'RANDOM_TOKEN_SECRET',
+							process.env.TOKEN,
 							{ expiresIn: '24h' }
 						)
 					});
@@ -79,14 +80,14 @@ exports.signup = (req, res, next) => {
 						username: user.username,
 						token: jwt.sign(
 							{ username: user.username },
-							'RANDOM_TOKEN_SECRET',
+							process.env.TOKEN,
 							{ expiresIn: '24h' }
 						)
-					})
+					});
 			    })
 				.catch(error => res.status(500).json(error));
 		    })
-		  .catch(error => res.status(400).json({error}));
+		  .catch(() => res.status(401).json({message: 'Username déjà pris'}));
 
 	  })
 	  .catch(error => res.status(500).json({error}));
